@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Level Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #result, #bookingDiv {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+    ul {
+      text-align: left;
+      display: inline-block;
+      margin: 0;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Fitness Level Quiz</h2>
+
+  <label>1) What is your gender?</label><br>
+  <select id="gender">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select>
+  <br><br>
+
+  <label>2) What is your age?</label><br>
+  <select id="age">
+    <option value="20-30">20-30 years</option>
+    <option value="30-44">30-44 years</option>
+    <option value="45-54">45-54 years</option>
+    <option value="55+">55+ years</option>
+  </select>
+  <br><br>
+
+  <label>3) Do you perform any physical activity?</label><br>
+  <select id="activity">
+    <option value="no">No</option>
+    <option value="low">Yes, but only 1-2 times per week</option>
+    <option value="medium">Yes, at least 30 minutes, 3+ times per week</option>
+    <option value="high">Yes, less than 30 minutes but more than 5 days per week</option>
+  </select>
+  <br><br>
+
+  <label>4) Do you have a family history of heart attack, hypertension, or diabetes?</label><br>
+  <select id="familyHistory">
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+  <br><br>
+
+  <label>5) What is your BMI?</label><br>
+  <select id="bmi">
+    <option value="normal">18.5 to 24.9 (Normal)</option>
+    <option value="underweight">Below 18.5 (Underweight)</option>
+    <option value="overweight">Above 24.9 (Overweight)</option>
+  </select>
+  <br><br>
+
+  <label>6) What is your waist circumference (in inches)?</label><br>
+  <select id="waist">
+    <option value="normal">Normal (Men &lt; 37 inches / Women &lt; 31.5 inches)</option>
+    <option value="high">High (Men 37-40 inches / Women 31.5-35 inches)</option>
+    <option value="very-high">Very High (Men &gt; 40 inches / Women &gt; 35 inches)</option>
+  </select>
+  <br><br>
+
+  <label>7) What is your blood pressure?</label><br>
+  <select id="bp" onchange="toggleHeartRate()">
+    <option value="normal">110-130/70-90 (Normal)</option>
+    <option value="low">Below 100/60</option>
+    <option value="high">Above 130/90</option>
+    <option value="unknown">I don’t know</option>
+  </select>
+  <br><br>
+
+  <!-- The heart rate question appears only if "I don’t know" is selected -->
+  <div id="heartRateDiv" style="display: none;">
+    <label>8) What is your resting heart rate?</label><br>
+    <select id="heartRate">
+      <option value="normal">60-100 bpm (Normal)</option>
+      <option value="low">Below 60 bpm</option>
+      <option value="high">Above 100 bpm</option>
+    </select>
+    <br><br>
+  </div>
+
+  <label>9) Do you have a smoking habit?</label><br>
+  <select id="smoking">
+    <option value="regular">Yes, I am a regular smoker</option>
+    <option value="quit">Yes, but I haven’t smoked for the last 6 months</option>
+    <option value="no">No</option>
+  </select>
+  <br><br>
+
+  <label>10) Do you consume alcohol?</label><br>
+  <select id="alcohol">
+    <option value="frequent">Yes, more than 3 times a week</option>
+    <option value="occasional">Once or twice a month</option>
+    <option value="never">No, I never consume alcohol</option>
+  </select>
+  <br><br>
+
+  <label>11) Do you have any type of injury (knee, shoulder, hip, fractures, sprains, or strains)?</label><br>
+  <select id="injury">
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+  <br><br>
+
+  <button onclick="calculateFitness()">Check Fitness Level</button>
+
+  <div id="result"></div>
+  
+  <!-- Booking section: hidden until results are displayed -->
+  <div id="bookingDiv" style="display: none;">
+    <p>Would you like to book a FREE trial session to kickstart your fitness journey?</p>
+    <button onclick="bookTrialYes()">Yes, Book Trial</button>
+    <button onclick="bookTrialNo()">No, Thanks</button>
+  </div>
+
+  <script>
+    // Toggle the heart rate question visibility based on BP selection
+    function toggleHeartRate() {
+      const bpValue = document.getElementById("bp").value;
+      if (bpValue === "unknown") {
+        document.getElementById("heartRateDiv").style.display = "block";
+      } else {
+        document.getElementById("heartRateDiv").style.display = "none";
+      }
+    }
+
+    function calculateFitness() {
+      let riskPoints = 0;
+      
+      // Retrieve values from the form
+      let age = document.getElementById("age").value;
+      let activity = document.getElementById("activity").value;
+      let familyHistory = document.getElementById("familyHistory").value;
+      let bmi = document.getElementById("bmi").value;
+      let waist = document.getElementById("waist").value;
+      let bp = document.getElementById("bp").value;
+      let heartRate = document.getElementById("heartRate").value;
+      let smoking = document.getElementById("smoking").value;
+      let alcohol = document.getElementById("alcohol").value;
+      let injury = document.getElementById("injury").value;
+
+      // Risk calculation logic:
+      if (age === "45-54" || age === "55+") riskPoints++;
+      if (activity === "no" || activity === "low") riskPoints++;
+      if (familyHistory === "yes") riskPoints++;
+      if (bmi !== "normal" && (waist === "high" || waist === "very-high")) riskPoints++;
+      if (bp === "low" || bp === "high") {
+        riskPoints++;
+      } else if (bp === "unknown") {
+        if (heartRate === "low" || heartRate === "high") riskPoints++;
+      }
+      if (smoking === "regular") riskPoints++;
+      if (alcohol === "frequent") riskPoints++;
+      if (injury === "yes") riskPoints++;
+
+      // Detailed result statements for each risk level
+      let resultText = "";
+      if (riskPoints <= 2) {
+        resultText = `
+          <p>🔥 <strong>Average Fitness Level</strong></p>
+          <p>Your lifestyle shows a relatively low risk of health issues. You’re doing well, but there’s always room to improve your strength, flexibility, and endurance. In our <strong>FREE trial session</strong>, you'll receive:</p>
+          <ul>
+            <li>A personalized fitness assessment</li>
+            <li>Detailed analysis of your current workout routine and mobility</li>
+            <li>Expert recommendations to optimize your performance</li>
+            <li>Guidance for sustainable, long-term lifestyle improvements</li>
+          </ul>
+          <p>Take this opportunity to fine-tune your fitness journey. Book your free session now!</p>
+        `;
+      } else if (riskPoints <= 6) {
+        resultText = `
+          <p>⚠️ <strong>Unfit Category</strong></p>
+          <p>Your responses indicate an increased risk for health issues. You may be facing challenges in physical activity, diet, or overall lifestyle. In our <strong>FREE fitness assessment session</strong>, you'll receive:</p>
+          <ul>
+            <li>A comprehensive evaluation of your physical condition</li>
+            <li>Identification of key areas for improvement</li>
+            <li>Customized exercise and nutrition recommendations</li>
+            <li>Strategies to boost strength, flexibility, and endurance</li>
+          </ul>
+          <p>This detailed analysis will empower you to take control of your health. Don’t wait—book your free trial session today and start transforming your fitness!</p>
+        `;
+      } else {
+        resultText = `
+          <p>🚨 <strong>High Risk Alert!</strong></p>
+          <p>Your lifestyle choices suggest a significant risk for serious health conditions. Immediate action is essential. In our <strong>FREE trial session</strong>, you'll get:</p>
+          <ul>
+            <li>A thorough assessment to pinpoint critical health and mobility issues</li>
+            <li>Expert analysis of your cardiovascular health, strength, and flexibility</li>
+            <li>A customized, actionable plan tailored to your needs</li>
+            <li>Professional guidance to help reduce your risk of future complications</li>
+          </ul>
+          <p>This session is a vital opportunity to regain control of your health. Act now—book your free fitness assessment and set yourself on a path toward a safer, healthier future!</p>
+        `;
+      }
+
+      // Display the result and show the booking section
+      document.getElementById("result").innerHTML = resultText;
+      document.getElementById("bookingDiv").style.display = "block";
+
+      // OPTIONAL: To automatically notify you when someone takes the quiz, you can send an AJAX request to your server here.
+      // Your server would then use the WhatsApp API (e.g., via Twilio) to send you a notification.
+    }
+
+    // Function to handle booking via WhatsApp when the user selects "Yes"
+    function bookTrialYes() {
+      // Replace with your WhatsApp number in international format (without the +)
+      let whatsappLink = "https://wa.me/919910164157?text=" + encodeURIComponent("I would like to book a free trial session. Please contact me with further details.");
+      window.location.href = whatsappLink;
+      document.getElementById("bookingDiv").innerHTML = "<p>Thank you! Your booking request has been initiated. We will contact you via WhatsApp soon.</p>";
+    }
+
+    // Function to handle if the user selects "No"
+    function bookTrialNo() {
+      document.getElementById("bookingDiv").innerHTML = "<p>Thank you for taking the quiz! Feel free to reach out if you change your mind.</p>";
+    }
+  </script>
+
+</body>
+</html>
